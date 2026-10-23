@@ -19,13 +19,16 @@
  *  - agent_get_faq:          this site's FAQ items
  *  - agent_set_faq:          create or update an FAQ item
  *  - agent_daily_summary:    a day's activity: inquiries, bookings, revenue, balances
+ *  - agent_list_professions: available profession profiles (photographer, videographer, real-estate, event-planner, generic)
+ *  - agent_get_flow:          the client conversation playbook adapted to a profession
+ *  - agent_save_site:         create or update a site registration (profession, channels, rules)
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 
-const server = new McpServer({ name: "swiftbook-agent", version: "0.4.0" });
+const server = new McpServer({ name: "swiftbook-agent", version: "0.5.0" });
 
 const coreUrl = () => process.env.BOOKING_AGENT_CORE_URL;
 const apiKey = () => process.env.BOOKING_AGENT_API_KEY;
@@ -310,6 +313,70 @@ server.tool(
     if (!coreUrl() || !apiKey()) return missingCreds();
     const q = date ? `?date=${date}` : "";
     return { content: [{ type: "text", text: await api(`/api/agent/daily-summary${q}`) }] };
+  }
+);
+
+server.tool(
+  "agent_list_professions",
+  "List the available profession profiles (photographer, videographer, real-estate, event-planner, generic). Each profile adapts the booking flow terminology, FAQ seeds and defaults to that business type.",
+  {},
+  async () => {
+    const dir = new URL("../profiles/", import.meta.url);
+    const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
+    const profiles = await Promise.all(files.map(async (f) => {
+      const p = JSON.parse(await readFile(new URL(f, dir), "utf8"));
+      return { id: p.id, label: p.label, description: p.description, booking_noun: p.terminology.booking_noun };
+    }));
+    return { content: [{ type: "text", text: JSON.stringify(profiles, null, 2) }] };
+  }
+);
+
+server.tool(
+  "agent_get_flow",
+  "Return the client conversation playbook adapted to a profession: the base state machine (availability -> proceed -> rate card -> selection -> deposit -> confirmation) overlaid with the profession's terminology, flow notes and FAQ seeds. Omit profession to read the profile the site registered with, if known.",
+  {
+    profession: z.string().optional().describe("Profile id from agent_list_professions, e.g. photographer"),
+    site_id: z.string().optional().describe("Read this site's registered profession instead of passing one"),
+  },
+  async ({ profession, site_id }) => {
+    let prof = profession;
+    if (!prof && site_id && coreUrl() && apiKey()) {
+      const text = await api(`/api/agent/site-profession?site_id=${encodeURIComponent(site_id)}`);
+      const m = /"profession"\s*:\s*"([^"]+)"/.exec(text);
+      if (m) prof = m[1];
+    }
+    prof = prof || "generic";
+    const base = await readFile(new URL("../flows/booking-flow.json", import.meta.url), "utf8");
+    let profile = {};
+    try {
+      profile = JSON.parse(await readFile(new URL(`../profiles/${prof}.json`, import.meta.url), "utf8"));
+    } catch {
+      profile = JSON.parse(await readFile(new URL("../profiles/generic.json", import.meta.url), "utf8"));
+      profile.note = `Unknown profession '${profession}'; served the generic profile.`;
+    }
+    return { content: [{ type: "text", text: JSON.stringify({ profession: prof, profile, base_flow: JSON.parse(base) }, null, 2) }] };
+  }
+);
+
+server.tool(
+  "agent_save_site",
+  "Create or update a site registration: profession profile, channels, notification triggers, booking rules and reminder policy. Omit site_id to register a new site (a new API key is issued).",
+  {
+    site_id: z.string().optional().describe("Existing site id for update"),
+    name: z.string().min(1),
+    profession: z.string().describe("Profile id from agent_list_professions"),
+    notify_on: z.array(z.enum(["new_inquiry", "booking_confirmed", "deposit_paid"])).optional(),
+    channels: z.array(z.enum(["email", "whatsapp", "slack"])).optional(),
+    booking_rules: z.record(z.unknown()).optional(),
+    balance_reminder_days: z.array(z.number().int()).optional(),
+  },
+  async (site) => {
+    if (!coreUrl() || !apiKey()) return missingCreds();
+    const text = await api("/api/agent/site-settings", {
+      method: "POST",
+      body: JSON.stringify(site),
+    });
+    return { content: [{ type: "text", text }] };
   }
 );
 

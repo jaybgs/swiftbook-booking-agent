@@ -1,0 +1,23 @@
+{
+  "id": "photographer",
+  "label": "Photographer / Photography studio",
+  "description": "Portrait, wedding and event photography. Clients pick a package, pay a deposit to hold a date, then the session is confirmed.",
+  "terminology": {
+    "booking_noun": "session",
+    "service_items": "packages",
+    "price_list": "rate card",
+    "deposit": "deposit, holds the date",
+    "capacity_rule": "one session per date by default"
+  },
+  "flow_notes": [
+    "After picking a date, ask which package style they want, then show the live rate card via agent_get_ratecard.",
+    "State the deposit plainly: half the package price, paid online to hold the date.",
+    "Deliverables and add-ons (albums, extra hours, second shooter) come from the rate card add-ons, never invented."
+  ],
+  "faq_seed": [
+    { "question": "How many photos do we receive?", "answer": "Depends on the package; the full deliverables list is on each package in the rate card." },
+    { "question": "Do you travel for shoots?", "answer": "Yes, travel is quoted per location; ask for the location before quoting." },
+    { "question": "How long until photos are delivered?", "answer": "Editing takes a few weeks depending on the package; confirm the current timeline before promising." }
+  ],
+  "defaults": { "balance_reminder_days": [14, 3], "currency": "NGN" }
+}

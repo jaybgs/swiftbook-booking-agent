@@ -1,6 +1,6 @@
 {
   "name": "booking-agent",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Multi-site booking agent SDK + MCP server. First run scaffolds a /agent management dashboard into your app, wired to the Booking Agent core.",
   "type": "module",
   "bin": {

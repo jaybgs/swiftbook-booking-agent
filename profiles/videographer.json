@@ -1,0 +1,23 @@
+{
+  "id": "videographer",
+  "label": "Videographer / Video production",
+  "description": "Wedding films, corporate video, documentaries. Clients pick a coverage package, pay a deposit to hold the shoot date, then delivery milestones follow.",
+  "terminology": {
+    "booking_noun": "shoot",
+    "service_items": "coverage packages",
+    "price_list": "rate card",
+    "deposit": "deposit, holds the shoot date",
+    "capacity_rule": "one shoot per date by default"
+  },
+  "flow_notes": [
+    "Coverage is quoted in hours (half-day / full-day / multi-day) plus deliverables (highlight reel, full film, raw footage).",
+    "State the deposit plainly: half the package price, paid online to hold the date.",
+    "Delivery milestones (rough cut, final cut) live in the package description; never invent timelines."
+  ],
+  "faq_seed": [
+    { "question": "How long is the final video?", "answer": "Depends on the package: highlights run a few minutes, full films longer. Check the package details." },
+    { "question": "Do you also take photos?", "answer": "Only if listed as an add-on in the rate card; otherwise say no rather than guessing." },
+    { "question": "Can we get the raw footage?", "answer": "Raw footage is an add-on if present on the rate card." }
+  ],
+  "defaults": { "balance_reminder_days": [14, 3], "currency": "NGN" }
+}

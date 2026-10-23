@@ -1,0 +1,22 @@
+{
+  "id": "generic",
+  "label": "Generic appointment business",
+  "description": "Any service business that books appointments or takes deposits: consultants, tutors, salons, coaches, agencies. Fall-back profile when no vertical matches.",
+  "terminology": {
+    "booking_noun": "appointment",
+    "service_items": "services",
+    "price_list": "service list",
+    "deposit": "optional deposit where the business holds a slot",
+    "capacity_rule": "appointments against the business calendar"
+  },
+  "flow_notes": [
+    "Ask what the client needs, show the live service list via agent_get_ratecard, then offer slots from real availability.",
+    "Only mention a deposit if one is configured on the service; otherwise never require or quote one.",
+    "Anything outside the service list (custom requests, discounts) queues for the owner instead of being promised."
+  ],
+  "faq_seed": [
+    { "question": "What are your prices?", "answer": "Prices are on the live service list; ask me and I'll show it." },
+    { "question": "Can I reschedule?", "answer": "Yes, give me your reference and a new preferred time." }
+  ],
+  "defaults": { "balance_reminder_days": [], "currency": "NGN" }
+}

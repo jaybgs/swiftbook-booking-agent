@@ -1,0 +1,23 @@
+{
+  "id": "real-estate",
+  "label": "Real estate agent / Agency",
+  "description": "Property sales and rentals. Clients book property viewings and consultations against the agent's calendar; no deposit required by default.",
+  "terminology": {
+    "booking_noun": "viewing",
+    "service_items": "properties / listings",
+    "price_list": "listings with asking prices",
+    "deposit": "none by default (optional holding fee where legally applicable)",
+    "capacity_rule": "viewings scheduled against the agent's calendar, travel time between properties respected"
+  },
+  "flow_notes": [
+    "Ask which property (or area and budget) first, then offer viewing slots from real availability via agent_check_availability.",
+    "Never state asking price, fees or terms from memory: pull the live listing via agent_get_ratecard; if absent, say it will be confirmed by the agent.",
+    "Viewings don't hold a property. Any offer or holding deposit is a human decision: queue it for the owner instead of committing."
+  ],
+  "faq_seed": [
+    { "question": "What are the agency fees?", "answer": "Fees are confirmed case by case by the agent; I can book a viewing or a call to discuss." },
+    { "question": "Is the price negotiable?", "answer": "Offers are handled directly by the agent; I can arrange a call." },
+    { "question": "Can I reschedule a viewing?", "answer": "Yes, ask me with your reference and I'll move it to another free slot." }
+  ],
+  "defaults": { "balance_reminder_days": [], "currency": "NGN" }
+}

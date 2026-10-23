@@ -1,0 +1,23 @@
+{
+  "id": "event-planner",
+  "label": "Event planner / Event management",
+  "description": "Weddings, parties, corporate events. Clients book a consultation, then a planning package with a retainer (deposit) that holds the event date.",
+  "terminology": {
+    "booking_noun": "event",
+    "service_items": "planning packages",
+    "price_list": "rate card",
+    "deposit": "retainer, holds the event date",
+    "capacity_rule": "one event per date by default; multi-day events supported"
+  },
+  "flow_notes": [
+    "Start with a consultation booking (date, guest count, venue status, budget range) before package selection.",
+    "State the retainer plainly: half the package price by default, paid online to hold the event date.",
+    "Vendor coordination, venue walkthroughs and day-of timeline live in the package description; never invent vendor names or prices."
+  ],
+  "faq_seed": [
+    { "question": "Do you handle venue booking?", "answer": "Venue sourcing and booking are included in most planning packages; exact scope is on each package." },
+    { "question": "How early should we book you?", "answer": "Popular dates go months ahead; check your date with me first." },
+    { "question": "What happens if we cancel?", "answer": "Cancellation terms are handled by the planner directly; I can arrange that conversation." }
+  ],
+  "defaults": { "balance_reminder_days": [14, 3], "currency": "NGN" }
+}
