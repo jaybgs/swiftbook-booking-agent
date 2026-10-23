@@ -1,0 +1,112 @@
+{
+  "name": "booking-confirmation-flow",
+  "version": "0.2.0",
+  "description": "The standard conversation playbook the SwiftBook agent runs with a client after an inquiry. Generic: works for any site registered with the agent. The MCP tools agent_get_ratecard and agent_report_booking provide the site-specific data.",
+  "principles": [
+    "An inquiry NEVER holds a date. Dates are held only once a booking is confirmed by a paid deposit.",
+    "The rate card is always live data from the site's ratecard (agent_get_ratecard), never hardcoded by the integrator.",
+    "Every conversation is keyed by a unique confirmation reference the client receives at inquiry time; it is the only credential needed to resume.",
+    "All flow state is resumable: on return, the agent picks up exactly where the client left off.",
+    "Honesty rules: unknown inputs get a polite re-prompt with the options again; failed payments are reported as failed, never as confirmed."
+  ],
+  "states": [
+    {
+      "id": "check_availability",
+      "entry": "client asks about a date OR opens the chat from the booking confirmation",
+      "agent_actions": [
+        "check the date against the site's confirmed bookings, blocked dates and buffer rules",
+        "show a loading state while checking"
+      ],
+      "transitions": {
+        "date_free": "ask_proceed",
+        "date_taken": "offer_alternatives"
+      }
+    },
+    {
+      "id": "offer_alternatives",
+      "agent_actions": [
+        "say the date is not available",
+        "offer nearby actually-free dates from real availability"
+      ],
+      "transitions": {
+        "client_picks_date": "check_availability",
+        "client_leaves": "end_turn"
+      }
+    },
+    {
+      "id": "ask_proceed",
+      "agent_actions": [
+        "tell the client the date is available",
+        "ask: 'Would you like to proceed with booking this date?' with Yes/No quick replies"
+      ],
+      "transitions": {
+        "yes": "show_ratecard",
+        "no": "stay_open"
+      }
+    },
+    {
+      "id": "stay_open",
+      "agent_actions": [
+        "thank them, no pressure",
+        "stay in chat; any new date mentioned restarts check_availability"
+      ],
+      "transitions": {
+        "new_date": "check_availability"
+      }
+    },
+    {
+      "id": "show_ratecard",
+      "agent_actions": [
+        "send the rate card as a rich message from agent_get_ratecard data (name, price, what's included)",
+        "ask: 'Which package would you like?' with one quick-reply per package"
+      ],
+      "transitions": {
+        "package_selected": "prompt_deposit",
+        "unrecognized_input": "show_ratecard"
+      }
+    },
+    {
+      "id": "prompt_deposit",
+      "agent_actions": [
+        "confirm the chosen package",
+        "store the selection on the session/inquiry",
+        "IMMEDIATELY, in the same message: compute the deposit from the package's live price/deposit settings and send the Pay-to-confirm button opening the payment provider checkout for that exact amount, carrying the confirmation reference. Never say the link will be sent later and never require the owner to send it manually."
+      ],
+      "transitions": {
+        "payment_succeeded": "confirm_booking",
+        "payment_failed": "retry_deposit",
+        "checkout_generation_failed": "retry_deposit"
+      }
+    },
+    {
+      "id": "retry_deposit",
+      "agent_actions": [
+        "tell the client the deposit did not go through or the checkout could not be created",
+        "offer the payment button again immediately"
+      ],
+      "transitions": {
+        "payment_succeeded": "confirm_booking"
+      }
+    },
+    {
+      "id": "confirm_booking",
+      "agent_actions": [
+        "post that the booking is confirmed and the date is now held",
+        "mark the session confirmed",
+        "report a booking_confirmed event to the agent core (agent_report_booking) so the owner's channels are notified"
+      ],
+      "transitions": {
+        "end": "chat_stays_open"
+      }
+    }
+  ],
+  "message_templates": {
+    "availability_free": "Good news \u2014 {date} is currently available. Would you like to proceed with booking this date?",
+    "availability_taken": "Unfortunately {date} is already booked. Here are the closest available dates: {alternatives}",
+    "ratecard_header": "Here's what we offer:",
+    "deposit_prompt": "To confirm your booking and hold {date}, a deposit of {deposit_amount} is required \u2014 tap below to pay now.",
+    "confirmed": "Your booking is confirmed! {date} is now held for you. Reference: {confirmation_reference}",
+    "payment_failed": "It looks like the deposit didn't go through. You can try again below \u2014 your date isn't held until the deposit is paid."
+  },
+  "integrator_notes": "To wire this flow into any site: 1) run agent_init to scaffold the dashboard, 2) use agent_save_ratecard to register the site's packages, 3) point the site's chat at these states \u2014 the agent core supplies availability via the site's own booking data and the ratecard via the core API."
+}

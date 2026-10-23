@@ -1,0 +1,23 @@
+{
+  "name": "booking-agent",
+  "version": "0.4.0",
+  "description": "Multi-site booking agent SDK + MCP server. First run scaffolds a /agent management dashboard into your app, wired to the Booking Agent core.",
+  "type": "module",
+  "bin": {
+    "booking-agent": "cli/init.js"
+  },
+  "exports": {
+    "./mcp": "./mcp/server.js",
+    "./report": "./sdk/report.js"
+  },
+  "scripts": {
+    "mcp": "node mcp/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "site_id": "nadon-klinton",
+  "name": "Nadon Klinton Photography",
+  "api_key_ref": "NADON_KLINTON_AGENT_KEY",
+  "notify_on": [
+    "booking_confirmed",
+    "deposit_paid",
+    "new_inquiry"
+  ],
+  "channels": [
+    "email",
+    "whatsapp"
+  ],
+  "booking_rules": {
+    "inquiry_does_not_reserve": true,
+    "recheck_availability_on_confirm": true,
+    "travel_buffer_hours": 4,
+    "timezone": "Africa/Lagos"
+  },
+  "balance_reminder_days": [
+    14,
+    3
+  ],
+  "draft_approval_queue": true
+}

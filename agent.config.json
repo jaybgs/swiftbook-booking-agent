@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "owner": {
+    "account_id": "",
+    "name": ""
+  },
+  "defaults": {
+    "currency": "NGN",
+    "timezone": "Africa/Lagos",
+    "escalation_hours": 48
+  },
+  "sites": ["sites/nadon-klinton"]
+}
