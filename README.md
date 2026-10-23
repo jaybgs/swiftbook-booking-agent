@@ -18,7 +18,8 @@ plus this SDK/MCP package that any AI agent or website can install.
 
 ## MCP tools (`mcp/server.js`)
 
-Site management: `agent_init`, `agent_status`, `agent_list_sites`, `agent_pause_site`
+Site management: `agent_init`, `agent_status`, `agent_list_sites`, `agent_pause_site`, `agent_save_site`
+Professions: `agent_list_professions`, `agent_get_flow`
 Bookings: `agent_get_bookings`, `agent_report_booking`, `agent_reschedule`,
 `agent_request_refund`, `agent_check_availability`, `agent_block_dates`
 Rate card: `agent_get_ratecard`, `agent_save_ratecard`
@@ -47,6 +48,9 @@ Discovery: the core serves `/.well-known/agent.json` describing all endpoints.
 - `rules/` — deterministic rules (availability checks, double-booking
   prevention, escalation policy). No pricing or booking decisions are
   AI-generated; AI is limited to summaries and wording.
+- `profiles/` — profession profiles (photographer, videographer, real-estate,
+  event-planner, generic): terminology, flow notes, FAQ seeds and defaults
+  that adapt the base flow to each business type
 - `flows/booking-flow.json` — the client conversation playbook (state machine)
 - `cli/init.js` — dashboard scaffolding CLI
 - `sdk/report.js` — event reporting helper
@@ -59,6 +63,17 @@ invoice (on deposit-confirmed), receipt (on balance paid), reschedule
 confirmation. Every other outgoing client email queues as a draft awaiting
 owner approval (approve / edit / discard from the dashboard or chat).
 Refunds are never issued automatically; every refund needs owner approval.
+
+## Professions
+
+The core is profession-neutral: bookings, rate cards, availability and
+balances work for any appointment business. `profiles/<id>.json` overlays a
+profession on that base: what you call the booking (session, shoot, viewing,
+event, appointment), which questions the flow asks, seed FAQ items, and
+whether deposits/retainers apply. Register a site with its profession
+(`agent_save_site`), then serve the adapted playbook with `agent_get_flow`.
+Real estate viewings, for example, skip deposits entirely; event planners
+use a retainer. Adding a new profession is one new JSON profile, no code.
 
 ## Balance reminders
 
